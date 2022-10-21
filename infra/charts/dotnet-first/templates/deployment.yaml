@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}
+    spec:
+      containers:
+        - name: {{ .Values.name }}
+          image: "{{ .Values.dockerhubName }}/{{ .Values.name }}"
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OTEL_SERVICE_NAME
+              value: {{ .Values.name }}
+            - name: OTEL_TRACES_EXPORTER
+              value: otlp
+            - name: OTLP_METRICS_EXPORTER
+              value: none
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ .Values.otelExporterOtlpEndpoint }}
+          ports:
+            - protocol: TCP
+              containerPort: {{ .Values.port }}
+            - protocol: TCP
+              containerPort: {{ .Values.portPrometheus }}
+          resources:
+            requests:
+              cpu: 200m
+              memory: 500Mi
+            limits:
+              cpu: 400m
+              memory: 1000Mi

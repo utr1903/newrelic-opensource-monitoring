@@ -1,0 +1,4 @@
+name: dotnet-second
+port: 8080
+
+replicas: 1

@@ -1,0 +1,18 @@
+{{- if and .Values.server.enabled .Values.rbac.create (empty .Values.server.useExistingClusterRoleName) -}}
+{{- if not (and (eq .Values.newrelic.scrape_case "just_namespaces") .Values.newrelic.namespaces) }}
+apiVersion: {{ template "rbac.apiVersion" . }}
+kind: ClusterRoleBinding
+metadata:
+  labels:
+    {{- include "prometheus.server.labels" . | nindent 4 }}
+  name: {{ template "prometheus.server.fullname" . }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ template "prometheus.serviceAccountName.server" . }}
+{{ include "prometheus.namespace" . | indent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ template "prometheus.server.fullname" . }}
+{{- end }}
+{{- end }}

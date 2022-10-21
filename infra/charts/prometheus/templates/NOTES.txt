@@ -1,0 +1,25 @@
+{{- if .Values.server.enabled -}}
+The Prometheus server can be accessed via port {{ .Values.server.service.servicePort }} on the following DNS name from within your cluster:
+{{ template "prometheus.server.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local
+
+{{- if .Values.server.persistentVolume.enabled }}
+{{- else }}
+#################################################################################
+######   WARNING: Persistence is disabled!!! You will lose your data when   #####
+######            the Server pod is terminated.                             #####
+#################################################################################
+{{- end }}
+{{- end }}
+
+{{- if .Values.nodeExporter.podSecurityPolicy.enabled }}
+{{- else }}
+#################################################################################
+######   WARNING: Pod Security Policy has been moved to a global property.  #####
+######            use .Values.podSecurityPolicy.enabled with pod-based      #####
+######            annotations                                               #####
+######            (e.g. .Values.nodeExporter.podSecurityPolicy.annotations) #####
+#################################################################################
+{{- end }}
+
+For more information on running Prometheus, visit:
+https://prometheus.io/

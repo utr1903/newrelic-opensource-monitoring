@@ -1,0 +1,35 @@
+{{- if and .Values.server.enabled .Values.rbac.create (ne .Values.newrelic.scrape_case "just_nodes") .Values.newrelic.namespaces -}}
+{{ range $.Values.newrelic.namespaces }}
+---
+apiVersion: {{ template "rbac.apiVersion" $ }}
+kind: Role
+metadata:
+  labels:
+    {{- include "prometheus.server.labels" $ | nindent 4 }}
+  name: {{ template "prometheus.server.fullname" $ }}
+  namespace: {{ . }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - services
+      - endpoints
+      - pods
+      - ingresses
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - "extensions"
+      - "networking.k8s.io"
+    resources:
+      - ingresses/status
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+{{- end }}
+{{- end }}

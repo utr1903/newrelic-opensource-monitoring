@@ -1,0 +1,5 @@
+name: java-second
+namespace: java
+port: 8080
+
+replicas: 1

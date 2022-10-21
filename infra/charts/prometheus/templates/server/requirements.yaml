@@ -1,0 +1,12 @@
+{{- $scrape_case := .Values.newrelic.scrape_case | required ".Values.newrelic.scrape_case is required." -}}
+{{- if and (ne $scrape_case "nodes_and_namespaces") (ne $scrape_case "just_nodes") (ne $scrape_case "just_namespaces") -}}
+  {{- fail ".Values.newrelic.scrape_case can only have one of the following values -> nodes_and_namespaces / just_nodes / just_namespaces" }}
+{{- end -}}
+{{- $remote_write := .Values.server.remoteWrite | required ".Values.server.remoteWrite is required." -}}
+{{- if (empty $remote_write) -}}
+  {{- fail ".Values.server.remoteWrite cannot be empty" }}
+{{- end -}}
+{{- range .Values.server.remoteWrite }}
+  {{ $remote_write_url := .url | required ".Values.server.remoteWrite.url is required." }}
+  {{ $remote_write_bearer_token := .bearer_token | required ".Values.server.remoteWrite.bearer_token is required." }}
+{{- end }}

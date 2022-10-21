@@ -1,0 +1,96 @@
+---
+# Source: opentelemetry-collector/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.name }}
+  labels:
+    helm.sh/chart: opentelemetry-collector-0.27.0
+    app.kubernetes.io/name: opentelemetry-collector
+    app.kubernetes.io/instance: example
+    app.kubernetes.io/version: "0.58.0"
+    app.kubernetes.io/managed-by: Helm
+data:
+  relay: |
+    extensions:
+      health_check: {}
+      memory_ballast: {}
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:{{ .Values.grpcPort }}
+          http:
+            endpoint: 0.0.0.0:{{ .Values.httpPort }}
+      fluentforward:
+        endpoint: 0.0.0.0:{{ .Values.fluentPort }}
+    processors:
+      batch: {}
+      memory_limiter:
+        check_interval: 5s
+        limit_mib: 1638
+        spike_limit_mib: 512
+      attributes:
+        actions:
+        # - key: service.name
+        #   value: "java-first"
+        #   action: upsert
+        - key: trace.id
+          from_attribute: trace_id
+          action: upsert
+        - key: span.id
+          from_attribute: span_id
+          action: upsert
+        - key: trace_id
+          action: delete
+        - key: span_id
+          action: delete
+      transform:
+        logs:
+          queries:
+            # The OpenTelemetry log SDK says the trace context should be encoded in trace_id and span_id,
+            # but New Relic conventions expects the fields to be dot delimited trace.id and span.id. We
+            # use the transform processor to replace trace_id => trace.id, span_id => span.id.
+            # https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/logs/README.md#trace-context-in-legacy-formats
+            # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/transformprocessor
+            # https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/pkg/ottl/contexts/ottllogs
+            # - replace_pattern(resource.attributes, "\"trace_id\":", "\"trace.id\":")
+            # - replace_all_patterns(resource.attributes, "span_id", "span.id")
+            # - replace_pattern(attributes["level"], "INFO", "WARN")
+            # - replace_pattern(resource.attributes, "\"trace_id\":", "\"trace.id\":")
+            # - replace_pattern(resource.attributes, "span_id", "span.id")
+            # - replace_all_patterns(attributes, "span_id", "span.id")
+            # - replace_pattern(resource.attributes, "span_id", "span.id")
+            # - replace_pattern(resource.attributes, "index", "indextest")
+    exporters:
+      logging: {}
+      otlp:
+        endpoint: {{ .Values.newRelicOtlpGrpcEndpoint }}
+        headers:
+          api-key: {{ .Values.newRelicLicenseKey }}
+    service:
+      extensions:
+      - health_check
+      - memory_ballast
+      pipelines:
+        traces:
+          receivers:
+          - otlp
+          processors:
+          - memory_limiter
+          - batch
+          exporters:
+          - logging
+          - otlp
+        logs:
+          receivers:
+          - fluentforward
+          processors:
+          - attributes
+          - transform
+          - batch
+          exporters:
+          - otlp
+      telemetry:
+        metrics:
+          address: 0.0.0.0:8888

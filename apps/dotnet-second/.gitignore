@@ -1,0 +1,7 @@
+bin
+obj
+
+appsettings*
+launchSettings.json
+
+.vs

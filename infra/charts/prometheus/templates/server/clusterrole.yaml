@@ -1,0 +1,56 @@
+{{- if and .Values.server.enabled .Values.rbac.create (empty .Values.server.useExistingClusterRoleName) -}}
+{{- if not (and (eq .Values.newrelic.scrape_case "just_namespaces") .Values.newrelic.namespaces) }}
+apiVersion: {{ template "rbac.apiVersion" . }}
+kind: ClusterRole
+metadata:
+  labels:
+    {{- include "prometheus.server.labels" . | nindent 4 }}
+  name: {{ template "prometheus.server.fullname" . }}
+rules:
+{{- if .Values.podSecurityPolicy.enabled }}
+  - apiGroups:
+    - extensions
+    resources:
+    - podsecuritypolicies
+    verbs:
+    - use
+    resourceNames:
+    - {{ template "prometheus.server.fullname" . }}
+{{- end }}
+  - apiGroups:
+      - ""
+    resources:
+{{- if ne .Values.newrelic.scrape_case "just_namespaces" }}
+      - nodes
+      - nodes/proxy
+      - nodes/metrics
+{{- end }}
+{{- if and (empty .Values.newrelic.namespaces) (ne .Values.newrelic.scrape_case "just_nodes") }}
+      - services
+      - endpoints
+      - pods
+      - ingresses
+      - configmaps
+{{- end }}
+    verbs:
+      - get
+      - list
+      - watch
+{{- if and (empty .Values.newrelic.namespaces) (ne .Values.newrelic.scrape_case "just_nodes") }}
+  - apiGroups:
+      - "extensions"
+      - "networking.k8s.io"
+    resources:
+      - ingresses/status
+      - ingresses
+    verbs:
+      - get
+      - list
+      - watch
+{{- end }}
+  - nonResourceURLs:
+      - "/metrics"
+    verbs:
+      - get
+{{- end }}
+{{- end }}

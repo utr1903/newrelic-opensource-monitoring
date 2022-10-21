@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>dotnet_first</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="prometheus-net.AspNetCore" Version="7.0.0-pre-000276-9e65611" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.0.0-rc9.6" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.0.0-rc9.6" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.0.0-rc9.6" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.4.0-alpha.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Services\" />
+    <None Remove="Services\Create\" />
+    <None Remove="Services\DotnetSecondService\Dtos\" />
+    <None Remove="Newtonsoft.Json" />
+    <None Remove="prometheus-net" />
+    <None Remove="prometheus-net.AspNetCore" />
+    <None Remove="Dtos\" />
+    <None Remove="Commons\" />
+    <None Remove="OpenTelemetry.Instrumentation.AspNetCore" />
+    <None Remove="OpenTelemetry.Api" />
+    <None Remove="OpenTelemetry.Extensions.Hosting" />
+    <None Remove="OpenTelemetry" />
+    <None Remove="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
+    <None Remove="OpenTelemetry.Instrumentation.Http" />
+    <None Remove="Logging\" />
+    <None Remove="Commons\Exceptions\" />
+    <None Remove="Services\ErrorService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
+    <Folder Include="Services\DotnetSecondService\" />
+    <Folder Include="Services\DotnetSecondService\Dtos\" />
+    <Folder Include="Dtos\" />
+    <Folder Include="Commons\" />
+    <Folder Include="Logging\" />
+    <Folder Include="Commons\Exceptions\" />
+    <Folder Include="Services\ErrorService\" />
+  </ItemGroup>
+</Project>

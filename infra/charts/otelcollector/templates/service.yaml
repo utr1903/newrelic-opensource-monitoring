@@ -1,0 +1,32 @@
+---
+# Source: opentelemetry-collector/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name }}
+  labels:
+    helm.sh/chart: opentelemetry-collector-0.27.0
+    app.kubernetes.io/name: opentelemetry-collector
+    app.kubernetes.io/instance: example
+    app.kubernetes.io/version: "0.58.0"
+    app.kubernetes.io/managed-by: Helm
+    component: standalone-collector
+spec:
+  type: ClusterIP
+  ports:
+    - name: otlp
+      port: {{ .Values.grpcPort }}
+      targetPort: otlp
+      protocol: TCP
+    - name: otlp-http
+      port: {{ .Values.httpPort }}
+      targetPort: otlp-http
+      protocol: TCP
+    - name: fluentforward
+      port: {{ .Values.fluentPort }}
+      targetPort: {{ .Values.fluentPort }}
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: opentelemetry-collector
+    app.kubernetes.io/instance: example
+    component: standalone-collector

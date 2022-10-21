@@ -1,0 +1,4 @@
+name: simulator-go
+imageName: simulatorgo
+namespace: simulator
+port: 8080
