@@ -144,7 +144,7 @@ docker push "${DOCKERHUB_NAME}/${simulatorbash[name]}"
 #   --tag "${DOCKERHUB_NAME}/${simulator[name]}" \
 #   "../../apps/simulator-go/."
 # docker push "${DOCKERHUB_NAME}/${simulator[name]}"
-#######
+######
 
 # #############
 # ### Pixie ###
@@ -220,6 +220,7 @@ helm upgrade ${fluentbit[name]} \
 ##################
 
 # Install / upgrade Helm deployment
+helm dependency update "../charts/prometheus"
 helm upgrade ${prometheus[name]} \
   --install \
   --wait \
