@@ -102,7 +102,7 @@ tenantId=$(echo $azureAccount | jq .tenantId)
 subscriptionId=$(echo $azureAccount | jq .id)
 
 # Create backend config
-echo -e 'use_microsoft_graph=false
+echo -e '
 tenant_id='"${tenantId}"'
 subscription_id='"${subscriptionId}"'
 resource_group_name=''"'${sharedResourceGroupName}'"''
